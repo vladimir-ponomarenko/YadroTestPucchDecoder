@@ -25,7 +25,6 @@ Orchestrator::Orchestrator(const SimulationConfig& config) : config_(config) {
         throw std::invalid_argument("Invalid simulation configuration.");
     }
 
-    
     matrix_ = std::make_unique<GeneratorMatrix>(config_.rate);
     encoder_ = std::make_unique<Encoder>(*matrix_);  
     decoder_ = std::make_unique<Decoder>(*matrix_);
@@ -51,25 +50,17 @@ Orchestrator::SimulationResults Orchestrator::run_simulation() {
         for (size_t frame = 0; frame < config_.num_frames_per_snr; ++frame) {
             
             std::vector<int8_t> data = generate_random_data();
-            
             std::vector<int8_t> encoded_data = encoder_->encode(data);
-
             std::vector<double> received_signal = channel_->transmit(encoded_data);
             
             if (config_.measure_time) {
-                
-                
                 auto start_time = std::chrono::high_resolution_clock::now();
                 decoder_->decode(received_signal);
                 auto end_time = std::chrono::high_resolution_clock::now();
                 total_decoding_time += std::chrono::duration<double, std::milli>(end_time - start_time).count();
             } else {
-                
                 decoder_->decode(received_signal);
             }
-
-
-            
             #pragma omp critical
             {
                statistics_->add_result(data, decoder_->decode(received_signal));
@@ -77,14 +68,12 @@ Orchestrator::SimulationResults Orchestrator::run_simulation() {
 
         }
 
-        
         results.ber_values.push_back(statistics_->get_ber());
 
         if (config_.measure_time) {
             results.decoding_times.push_back(total_decoding_time / static_cast<double>(config_.num_frames_per_snr));
         }
     }
-
     return results;
 }
 
@@ -98,7 +87,6 @@ void Orchestrator::save_results(const SimulationResults& results, const std::str
                     results.ber_values.size() * sizeof(double));
     ber_file.close();
 
-    
     if (!results.decoding_times.empty()) {
         std::ofstream time_file(file_prefix + "_time.bin", std::ios::binary);
         if (!time_file.is_open()) {
@@ -128,11 +116,8 @@ std::vector<int8_t> Orchestrator::generate_random_data() const {
 
 double Orchestrator::measure_decoding_time(const std::vector<double>& received_signal) const {
     auto start_time = std::chrono::high_resolution_clock::now();  
-
     decoder_->decode(received_signal); 
-
-    auto end_time = std::chrono::high_resolution_clock::now();    
-    
+    auto end_time = std::chrono::high_resolution_clock::now();
     return std::chrono::duration<double, std::milli>(end_time - start_time).count();
 }
 

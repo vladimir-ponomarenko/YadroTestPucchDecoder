@@ -17,13 +17,10 @@ std::vector<int8_t> Decoder::decode(const std::vector<double>& llr_values) const
     const size_t k = matrix_.rate(); 
     std::vector<int8_t> best_sequence(k);
     double best_metric = std::numeric_limits<double>::lowest(); 
-
     
     for (size_t i = 0; i < precomputed_codewords_.size(); ++i) {
-
         
         double metric = compute_metric(precomputed_codewords_[i], llr_values);
-
         
         if (metric > best_metric) {
             best_metric = metric;
@@ -38,17 +35,6 @@ std::vector<int8_t> Decoder::decode(const std::vector<double>& llr_values) const
 
     return best_sequence;
 }
-
-
-
-
-
-
-
-
-
-
-
 
 double Decoder::compute_metric(const std::vector<int8_t>& encoded,
                              const std::vector<double>& received) const {

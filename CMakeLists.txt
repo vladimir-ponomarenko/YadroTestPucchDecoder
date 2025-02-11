@@ -18,9 +18,7 @@ add_compile_options(
     -Wunused
 )
 
-# OpenMP
 find_package(OpenMP)
-
 
 add_library(pucch_core
     src/core/channel.cpp
@@ -48,6 +46,8 @@ target_link_libraries(pucch_decoder PRIVATE pucch_core)
 if(OpenMP_CXX_FOUND)
     target_link_libraries(pucch_decoder PRIVATE OpenMP::OpenMP_CXX)
 endif()
+
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/data)
 
 install(TARGETS pucch_decoder pucch_core
     RUNTIME DESTINATION bin

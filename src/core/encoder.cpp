@@ -4,7 +4,6 @@ namespace pucch::core {
 
 Encoder::Encoder(const GeneratorMatrix& matrix) : matrix_(matrix) {}
 
-
 std::vector<int8_t> Encoder::encode(const std::vector<int8_t>& data) const { 
     if (data.size() != matrix_.rate()) {
         throw std::invalid_argument("Input data size does not match the generator matrix rate.");
